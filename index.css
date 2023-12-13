@@ -1,0 +1,26 @@
+main {
+    display: flex;
+    flex-flow: column;
+}
+main > div {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+}
+
+main * {
+    padding: 1rem;
+}
+
+.microphone {
+    background-color: #eee;
+    padding: 0.2rem;
+    border-radius: 1rem;
+    min-width: auto;
+    min-height: auto;
+    color: Blue;
+}
+
+.active-recording {
+    color: Red;
+}
