@@ -1,6 +1,6 @@
 // source: https://developer.chrome.com/blog/voice-driven-web-apps-introduction-to-the-web-speech-api
-const languages =
-  [['Afrikaans',       ['af-ZA']],
+const languages = [
+  ['Afrikaans',       ['af-ZA']],
   ['Bahasa Indonesia',['id-ID']],
   ['Bahasa Melayu',   ['ms-MY']],
   ['Català',          ['ca-ES']],
@@ -60,31 +60,39 @@ const languages =
     ['cmn-Hans-HK', '普通话 (香港)'],
     ['cmn-Hant-TW', '中文 (台灣)'],
     ['yue-Hant-HK', '粵語 (香港)']],
-    ['日本語',           ['ja-JP']],
-    ['Lingua latīna',   ['la']]];
+  ['日本語',           ['ja-JP']],
+  ['Lingua latīna',   ['la']]
+];
 
-const elements = [
-  'select_language'
-].reduce((map, html_id) => (map[html_id] = document.getElementById(html_id), map), []);
+const pageElements = [
+  'select_language',
+  'select_dialect',
+  'info',
+  'input1',
+  'input2',
+].reduce((map, html_id) => {
+  map[html_id] = document.getElementById(html_id);
+  return map;
+}, []);
 
 for (let i = 0; i < languages.length; i++) {
-  elements['select_language'].options[i] = new Option(languages[i][0], i);
+  pageElements['select_language'].options[i] = new Option(languages[i][0], `${i}`);
 }
 
-select_language.selectedIndex = 6;
+pageElements['select_language'].selectedIndex = 6;
 updateCountry();
-select_dialect.selectedIndex = 6;
+pageElements['select_dialect'].selectedIndex = 6;
 showInfo('info_start');
 
 function updateCountry() {
-  for (let i = select_dialect.options.length - 1; i >= 0; i--) {
-    select_dialect.remove(i);
+  for (let i = pageElements['select_dialect'].options.length - 1; i >= 0; i--) {
+    pageElements['select_dialect'].remove(i);
   }
-  const list = languages[select_language.selectedIndex];
+  const list = languages[pageElements['select_language'].selectedIndex];
   for (let i = 1; i < list.length; i++) {
-    select_dialect.options.add(new Option(list[i][1], list[i][0]));
+    pageElements['select_dialect'].options.add(new Option(list[i][1], list[i][0]));
   }
-  select_dialect.style.visibility = list[1].length === 1 ? 'hidden' : 'visible';
+  pageElements['select_dialect'].style.visibility = list[1].length === 1 ? 'hidden' : 'visible';
 }
 
 let create_email = false;
@@ -96,7 +104,8 @@ if (!('webkitSpeechRecognition' in window)) {
   upgrade();
 } else {
   start_button.style.display = 'inline-block';
-  const recognition = new webkitSpeechRecognition();
+  const SpeechRecognitionEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognitionEngine();
   recognition.continuous = true;
   recognition.interimResults = true;
 
@@ -201,7 +210,7 @@ function startButton(event) {
     return;
   }
   final_transcript = '';
-  recognition.lang = select_dialect.value;
+  recognition.lang = pageElements['select_dialect'].value;
   recognition.start();
   ignore_onend = false;
   final_span.innerHTML = '';
@@ -214,14 +223,14 @@ function startButton(event) {
 
 function showInfo(s) {
   if (s) {
-    for (let child = info.firstChild; child; child = child.nextSibling) {
+    for (let child = pageElements['info'].firstChild; child; child = child.nextSibling) {
       if (child.style) {
         child.style.display = child.id === s ? 'inline' : 'none';
       }
     }
-    info.style.visibility = 'visible';
+    pageElements['info'].style.visibility = 'visible';
   } else {
-    info.style.visibility = 'hidden';
+    pageElements['info'].style.visibility = 'hidden';
   }
 }
 
@@ -231,8 +240,4 @@ function showButtons(style) {
     return;
   }
   current_style = style;
-  copy_button.style.display = style;
-  email_button.style.display = style;
-  copy_info.style.display = 'none';
-  email_info.style.display = 'none';
 }

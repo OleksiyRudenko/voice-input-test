@@ -10,15 +10,16 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Overpass%20Mono">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
     <script src="https://kit.fontawesome.com/c99a229429.js" crossorigin="anonymous"></script>
-    <script src="./voice-input-arbitrary.js" defer="true"></script>
+    <script src="./voice-input-arbitrary.js" defer></script>
 </head>
 <body>
 <main>
+    <h1 class="center">Arbitrary text speech recognition</h1>
     <div id="info">
         <p id="info_start">Pick either of the input fields or switch between
             input fields (e.g. with TAB) and begin speaking.
         </p>
-        <p id="info_speak_now">Speak now. Click Parking Lot to stop speech recognition.</p>
+        <p id="info_speak_now">Speak now. Click Parking Lot to stop speech recognition or mic icon to block speech input.</p>
         <p id="info_no_speech">No speech was detected. You may need to adjust your
             <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
                 microphone settings</a>.</p>
@@ -34,21 +35,22 @@
             Upgrade to <a href="//www.google.com/chrome">Chrome</a>
             version 25 or later.</p>
     </div>
-    <div id="div_language">
+    <div id="div_language" class="center">
         <select id="select_language" onchange="updateCountry()"></select>
         &nbsp;&nbsp;
         <select id="select_dialect"></select>
     </div>
-    <div>
+    <div class="center">
         <label for="input1">Text input 1</label>
-        <input id="input1" class="voice-input" type="text" size="30"/>
+        <input id="input1" class="voice-input" type="text" size="30" tabindex="1"/>
         <button id="voice1" class="microphone" title="click to start">
             <i class="fa-solid fa-microphone"></i>
         </button>
     </div>
-    <div>
+    <div class="center">
+        <p class="center">Try saying "new line" in the box below.</p>
         <label for="input2">Text input 2</label>
-        <textarea id="input2" class="voice-input" type="text" cols="30" rows="10"></textarea>
+        <textarea id="input2" class="voice-input" cols="30" rows="10" tabindex="2"></textarea>
         <button id="voice2" class="microphone" title="click to start">
             <i class="fa-solid fa-microphone"></i>
         </button>
@@ -62,9 +64,10 @@
         <span id="interim_span" class="interim"></span>
         <p>
     </div>
-    <div>
-        <button type="button">Parking Lot</button>
+    <div class="center">
+        <button type="button" tabindex="3">Parking Lot</button>
     </div>
+    <h1 class="center">Grammar based speech recognition</h1>
 </main>
 
 </body>

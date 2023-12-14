@@ -3,8 +3,15 @@ main {
     flex-flow: column;
 }
 
-main * {
-    padding: 1rem;
+main div, button {
+    padding-bottom: 0.5rem;
+}
+
+input[type=text], textarea {
+    padding: 0.3rem;
+    font-size: 1rem;
+    width: 30rem;
+    font-family: monospace;
 }
 
 /* main > div {
@@ -12,6 +19,10 @@ main * {
     flex-flow: row;
     align-items: flex-start;
 } */
+
+.center {
+    text-align: center;
+}
 
 a:link {
     color:#000;
@@ -24,8 +35,8 @@ a:hover {
     color:#33F;
 }
 
-.microphone-inactive {
-    background-color: #eee;
+.microphone {
+    position: absolute;
     padding: 0.2rem;
     border-radius: 1rem;
     min-width: auto;
@@ -35,4 +46,21 @@ a:hover {
 
 .microphone-recording {
     color: Red;
+    animation: blink 1s linear infinite;
+}
+
+@keyframes blink {
+    25% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.2;
+    }
+    75% {
+        opacity: 0.6;
+    }
+}
+
+.microphone-blocked {
+    color: Gray;
 }
