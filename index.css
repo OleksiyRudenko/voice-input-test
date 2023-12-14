@@ -2,17 +2,29 @@ main {
     display: flex;
     flex-flow: column;
 }
-main > div {
-    display: flex;
-    flex-flow: row;
-    align-items: flex-start;
-}
 
 main * {
     padding: 1rem;
 }
 
-.microphone {
+/* main > div {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+} */
+
+a:link {
+    color:#000;
+    text-decoration: none;
+}
+a:visited {
+    color:#000;
+}
+a:hover {
+    color:#33F;
+}
+
+.microphone-inactive {
     background-color: #eee;
     padding: 0.2rem;
     border-radius: 1rem;
@@ -21,6 +33,6 @@ main * {
     color: Blue;
 }
 
-.active-recording {
+.microphone-recording {
     color: Red;
 }
