@@ -35,16 +35,87 @@ a:hover {
     color:#33F;
 }
 
-.microphone {
-    position: absolute;
-    padding: 0.2rem;
-    border-radius: 1rem;
-    min-width: auto;
-    min-height: auto;
-    color: Blue;
+/* === Customized checkbox === */
+
+/* Step 1: Common Properties
+  These styles are required to make icons render reliably */
+.icon::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
 }
 
-.microphone-recording {
+span:has(.checkbox) {
+    position: relative;
+}
+
+label.checkbox {
+    position: absolute;
+    top: -0.5rem;
+    right: -1rem;
+}
+
+.checkbox input {
+    height: 0;
+    width: 0;
+}
+
+.checkbox {
+    display: block;
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 18px;
+    font-size: 22px;
+    user-select: none;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2rem;
+    width: 2rem;
+    border: 2px solid #c9c9c9;
+    border-radius: 1rem;
+    background-color: #eee;
+}
+
+.checkbox input .checkmark:after {
+    top: 0;
+    left: -1rem;
+    width: 2rem;
+    height: 2rem;
+}
+
+.checkbox input:checked ~ .checkmark:after {
+    display: block;
+    color: Green;
+}
+
+.checkbox input:not(:checked) ~ .checkmark:after {
+    display: block;
+    color: #c9c9c9;
+}
+
+/*To hide the checkmark when not checked */
+
+.checkmark:after {
+    font-family: "Font Awesome 5 Free", fantasy;
+    font-weight: 900;
+    content: "\f130";
+    position: absolute;
+    left: 0.34rem;
+    top: 0.2rem;
+    /* display: none; */
+}
+
+.checkmark:hover {
+    background-color: Gray;
+}
+
+/* --- end of Customized checkbox --- */
+
+.recording-active {
     color: Red;
     animation: blink 1s linear infinite;
 }
