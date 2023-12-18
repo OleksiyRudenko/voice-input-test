@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="https://yarnpkg.com/en/package/normalize.css">
     <link rel="stylesheet" href="https://oleksiyrudenko.github.io/default-beauty.css/default-beauty.css">
     <link rel="stylesheet" href="./index.css">
-    <link rel="stylesheet" href="./voice-input-arbitrary.css">
+    <link rel="stylesheet" href="modules/voice-input-arbitrary.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Overpass%20Mono">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-    <script src="./voice-input-arbitrary.js" defer></script>
+    <script type="module" src="main.js"></script>
 </head>
 <body>
     <main>
@@ -37,7 +37,7 @@
         </div>
         <div id="div_language" class="center">
             <label for="select_language">
-                <select id="select_language" onchange="updateCountry()"></select>
+                <select id="select_language"></select>
             </label>
             &nbsp;&nbsp;
             <label for="select_dialect">
@@ -50,9 +50,9 @@
                     <label for="input1">
                         <input id="input1" class="voice-input" type="text" size="30" tabindex="1"/>
                     </label>
-                    <label id="recording-control1" class="checkbox">
+                    <label id="recognition-control1" class="checkbox">
                         <input id="recognition-switch1" type="checkbox" />
-                        <span class="checkmark" title="Activate & deactivate recognition"></span>
+                        <span class="checkmark" id="recognition-icon1" title="Activate & deactivate recognition"></span>
                     </label>
                 </span>
             </fieldset>
@@ -64,9 +64,9 @@
                     <label for="input2">
                         <textarea id="input2" class="voice-input" cols="30" rows="10" tabindex="2"></textarea>
                     </label>
-                    <label id="recording-control2" class="checkbox" title="Activate & deactivate recognition">
-                        <input id="recognition-switch2" type="checkbox" />
-                        <span class="checkmark"></span>
+                    <label id="recognition-control2" class="checkbox" title="Activate & deactivate recognition">
+                        <input id="recognition-switch2" type="checkbox" checked />
+                        <span class="checkmark" id="recognition-icon2" title="Activate & deactivate recognition"></span>
                     </label>
                 </span>
             </fieldset>

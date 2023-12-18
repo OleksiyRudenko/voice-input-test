@@ -115,7 +115,7 @@ label.checkbox {
 
 /* --- end of Customized checkbox --- */
 
-.recording-active {
+.checkbox input:checked ~ .recording-active:after {
     color: Red;
     animation: blink 1s linear infinite;
 }
@@ -130,8 +130,4 @@ label.checkbox {
     75% {
         opacity: 0.6;
     }
-}
-
-.microphone-blocked {
-    color: Gray;
 }
