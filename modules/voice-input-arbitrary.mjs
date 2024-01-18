@@ -4,7 +4,7 @@ import { extractInt, capitalize, linebreakHTMLize } from "./text-processing.mjs"
 
 const recognitionState = {
   isRecognitionInProgress: false,
-
+  recognitionInputGroupId: null,
 };
 
 const recognitionStart = ({target}) => {
