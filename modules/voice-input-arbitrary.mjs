@@ -1,19 +1,48 @@
 // source: https://developer.chrome.com/blog/voice-driven-web-apps-introduction-to-the-web-speech-api
-import { showInfo } from "./page-elements.mjs";
+import {pageElements, showInfo} from "./page-elements.mjs";
 import { extractInt, capitalize, linebreakHTMLize } from "./text-processing.mjs";
+import {encodeSpecialTokens, execute, joinTokens} from "./voice-input-commands.mjs";
 
 const recognitionState = {
   isRecognitionInProgress: false,
   recognitionInputGroupId: null,
+  recognitionOutputTarget: null,
+  recognitionInterimOutputTarget: null,
 };
+
+const SpeechRecognitionEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
+// const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+// const SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+
+
+const recognition = new SpeechRecognitionEngine();
+recognition.continuous = true;
+recognition.interimResults = true;
+
+let final_transcript = '';
+let ignore_onend = false;
+let start_timestamp;
+
+const insertTextAtCursor = (targetInput, text) => {
+  console.log(">>> Selection:", targetInput.selectionStart, targetInput.selectionEnd, text);
+  // targetInput.value = targetInput.value.substring(0, targetInput.selectionStart) + text + targetInput.value.substring(targetInput.selectionEnd);
+  targetInput.setRangeText(text, targetInput.selectionStart, targetInput.selectionEnd, "end");
+};
+
+const getTime = () => {
+  return new Date().toTimeString();
+}
 
 const recognitionStart = ({target}) => {
   const recognitionInputId = extractInt(target.id);
-  if (!recognitionInputId) {
+  /* if (!recognitionInputId) {
     return;
-  }
+  } */
+  console.log(`=============== ${getTime()}\n=> recognitionStart`);
+  console.log(JSON.stringify(recognitionState));
   console.log(`Input controls #${recognitionInputId} selected.`);
 
+  recognition.lang = pageElements['select_dialect'].value;
   const recognitionFlagId = `recognition-switch${recognitionInputId}`;
   const recognitionFlag = document.getElementById(recognitionFlagId);
   if (recognitionFlag.checked) {
@@ -21,6 +50,10 @@ const recognitionStart = ({target}) => {
     // do the magic
     const recognitionIcon = document.getElementById(`recognition-icon${recognitionInputId}`);
     recognitionIcon.classList.add('recording-active');
+    recognitionState.recognitionOutputTarget = document.getElementById(`input${recognitionInputId}`);
+    recognitionState.recognitionInterimOutputTarget = document.getElementById(`interim-output${recognitionInputId}`);
+    // final_transcript = recognitionState.recognitionOutputTarget.value;
+    recognition.start();
   } else {
     console.log(`--- Recognition disabled by user.`);
   }
@@ -28,54 +61,42 @@ const recognitionStart = ({target}) => {
 
 const recognitionStop = ({target}) => {
   const recognitionInputId = extractInt(target.id);
-  if (!recognitionInputId) {
+  /* if (!recognitionInputId) {
     return;
-  }
-
+  } */
+  console.log(`=============== ${getTime()}\n=> recognitionStop`);
+  console.log(JSON.stringify(recognitionState));
+  console.log(`Input controls #${recognitionInputId} blurred.`);
   const recognitionFlag = document.getElementById(`recognition-switch${recognitionInputId}`);
   if (recognitionFlag.checked) {
     console.log('--- stopping recognition');
     const recognitionIcon = document.getElementById(`recognition-icon${recognitionInputId}`);
     recognitionIcon.classList.remove('recording-active');
-
+    recognition.stop();
   }
 };
 
 export const registerRecognitionCallbacks = () => {
-  const SpeechRecognitionEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognitionEngine();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onstart = function() {
+  recognition.onstart = () => {
+    console.log(`RECOGNITION.onStart`);
     recognitionState.isRecognitionInProgress = true;
     showInfo('info_speak_now');
-    start_img.src = 'mic-animate.gif';
+    // start_img.src = 'mic-animate.gif';
   }
-};
 
-// ======================================================
-
-let final_transcript = '';
-let ignore_onend;
-let start_timestamp;
-
-
-{
-
-
-  recognition.onerror = function(event) {
+  recognition.onerror = (event) => {
+    console.log(`RECOGNITION.onError`, event);
     if (event.error === 'no-speech') {
       start_img.src = 'mic.gif';
       showInfo('info_no_speech');
       ignore_onend = true;
     }
-  if (event.error === 'audio-capture') {
-    start_img.src = 'mic.gif';
-    showInfo('info_no_microphone');
-    ignore_onend = true;
-  }
-  if (event.error === 'not-allowed') {
+    if (event.error === 'audio-capture') {
+      start_img.src = 'mic.gif';
+      showInfo('info_no_microphone');
+      ignore_onend = true;
+    }
+    if (event.error === 'not-allowed') {
       if (event.timeStamp - start_timestamp < 100) {
         showInfo('info_blocked');
       } else {
@@ -85,7 +106,31 @@ let start_timestamp;
     }
   }
 
-  recognition.onend = function() {
+  recognition.onresult = (event) => {
+    console.log(`RECOGNITION.onResult`, event);
+    let interim_transcript = [];
+    let final_transcript = [];
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      interim_transcript.push(event.results[i][0].transcript.trim().toLowerCase());
+      if (event.results[i].isFinal) {
+        final_transcript.push(event.results[i][0].transcript.trim().toLowerCase());
+      }
+    }
+    recognitionState.recognitionInterimOutputTarget.value = encodeSpecialTokens(interim_transcript).join(' ');
+
+    if (final_transcript.length) {
+      /* final_span.innerHTML = linebreakHTMLize(final_transcript);
+      interim_span.innerHTML = linebreakHTMLize(interim_transcript); */
+      insertTextAtCursor(recognitionState.recognitionOutputTarget, joinTokens(execute(final_transcript)));
+      // recognitionState.recognitionOutputTarget.value = final_transcript;
+    } else {
+      console.log("---- Empty input");
+    }
+  }
+
+  recognition.onend = () => {
+    console.log(`RECOGNITION.onEnd`);
+    recognitionStop({target: recognitionState.recognitionOutputTarget});
     recognitionState.isRecognitionInProgress = false;
     if (ignore_onend) {
       return;
@@ -103,28 +148,14 @@ let start_timestamp;
       window.getSelection().addRange(range);
     }
   }
+};
 
-  recognition.onresult = function(event) {
-    let interim_transcript = '';
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        final_transcript += event.results[i][0].transcript;
-      } else {
-        interim_transcript += event.results[i][0].transcript;
-      }
-    }
 
-    final_transcript = capitalize(final_transcript);
-    final_span.innerHTML = linebreakHTMLize(final_transcript);
-    interim_span.innerHTML = linebreakHTMLize(interim_transcript);
-    if (final_transcript || interim_transcript) {
-      showButtons('inline-block');
-    }
-  }
-}
+
+// ======================================================
 
 function startButton(event) {
-  if (isRecognitionInProgress) {
+  if (recognitionState.isRecognitionInProgress) {
     recognition.stop();
     return;
   }
