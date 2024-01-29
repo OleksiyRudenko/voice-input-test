@@ -1,7 +1,7 @@
 // source: https://developer.chrome.com/blog/voice-driven-web-apps-introduction-to-the-web-speech-api
 import {pageElements, showInfo} from "./page-elements.mjs";
 import { extractInt, capitalize, linebreakHTMLize } from "./text-processing.mjs";
-import {encodeSpecialTokens, execute, joinTokens} from "./voice-input-commands.mjs";
+import {encodeSpecialTokens, execute as executeTokens, joinWords, splitIntoTokens} from "./voice-input-commands.mjs";
 
 const recognitionState = {
   isRecognitionInProgress: false,
@@ -116,13 +116,20 @@ export const registerRecognitionCallbacks = () => {
         final_transcript.push(event.results[i][0].transcript.trim().toLowerCase());
       }
     }
-    recognitionState.recognitionInterimOutputTarget.value = encodeSpecialTokens(interim_transcript).join(' ');
-
+    recognitionState.recognitionInterimOutputTarget.value =
+      joinWords(encodeSpecialTokens(splitIntoTokens(interim_transcript.join(" "))));
     if (final_transcript.length) {
-      /* final_span.innerHTML = linebreakHTMLize(final_transcript);
-      interim_span.innerHTML = linebreakHTMLize(interim_transcript); */
-      insertTextAtCursor(recognitionState.recognitionOutputTarget, joinTokens(execute(final_transcript)));
-      // recognitionState.recognitionOutputTarget.value = final_transcript;
+      /* -- final_span.innerHTML = linebreakHTMLize(final_transcript);
+      interim_span.innerHTML = linebreakHTMLize(interim_transcript); --- */
+
+      const tokens = splitIntoTokens(final_transcript.join(""));
+      console.log("TOKENS:", tokens);
+      const executedTokens = executeTokens(tokens);
+      console.log("TOKENS EXECUTED:", executedTokens);
+      const joinedWords = joinWords(executedTokens);
+      console.log("JOINED:", joinedWords);
+      insertTextAtCursor(recognitionState.recognitionOutputTarget, joinedWords);
+      //// recognitionState.recognitionOutputTarget.value = final_transcript;
     } else {
       console.log("---- Empty input");
     }
@@ -131,11 +138,12 @@ export const registerRecognitionCallbacks = () => {
   recognition.onend = () => {
     console.log(`RECOGNITION.onEnd`);
     recognitionStop({target: recognitionState.recognitionOutputTarget});
+    recognitionState.recognitionOutputTarget.blur();
     recognitionState.isRecognitionInProgress = false;
+
     if (ignore_onend) {
       return;
     }
-    start_img.src = 'mic.gif';
     if (!final_transcript) {
       showInfo('info_start');
       return;
@@ -149,34 +157,5 @@ export const registerRecognitionCallbacks = () => {
     }
   }
 };
-
-
-
-// ======================================================
-
-function startButton(event) {
-  if (recognitionState.isRecognitionInProgress) {
-    recognition.stop();
-    return;
-  }
-  final_transcript = '';
-  recognition.lang = pageElements['select_dialect'].value;
-  recognition.start();
-  ignore_onend = false;
-  final_span.innerHTML = '';
-  interim_span.innerHTML = '';
-  start_img.src = 'mic-slash.gif';
-  showInfo('info_allow');
-  showButtons('none');
-  start_timestamp = event.timeStamp;
-}
-
-let current_style;
-function showButtons(style) {
-  if (style === current_style) {
-    return;
-  }
-  current_style = style;
-}
 
 export { recognitionStart, recognitionStop };
