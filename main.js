@@ -4,7 +4,7 @@ import { recognitionStart, recognitionStop, registerRecognitionCallbacks } from 
 
 populateWithLanguageOptions(pageElements['select_language']);
 const updateDialect = createLanguageHandler(pageElements['select_language'], pageElements['select_dialect']);
-updateDialect(6, 6);
+updateDialect(10, 0); // English, en-US
 
 pageElements['select_language'].addEventListener('change', function () { updateDialect(this.selectedIndex) });
 showInfo('info_start');
