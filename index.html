@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Test x-webkit-speech</title>
+    <script src="https://kit.fontawesome.com/c99a229429.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://yarnpkg.com/en/package/normalize.css">
+    <!-- link rel="stylesheet" href="https://oleksiyrudenko.github.io/default-beauty.css/default-beauty.css" -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@exampledev/new.css@1/new.min.css">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="modules/voice-input-arbitrary.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Overpass%20Mono">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <script type="module" src="main.js"></script>
+</head>
+<body>
+    <main>
+        <h1 class="center">Arbitrary text speech recognition</h1>
+        <div id="info">
+            <p id="info-start">Pick either of the input fields or switch between
+                input fields (e.g. with TAB) and begin speaking.
+            </p>
+            <p id="info-speak-now">Speak now. Click Parking Lot to stop speech recognition or mic icon to block speech input.</p>
+            <p id="info-no-speech">No speech was detected. You may need to adjust your
+                <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
+                    microphone settings</a>.</p>
+            <p id="info-no-microphone" style="display:none">
+                No microphone was found. Ensure that a microphone is installed and that
+                <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
+                    microphone settings</a> are configured correctly.</p>
+            <p id="info-allow">Click the "Allow" button above to enable your microphone.</p>
+            <p id="info-denied">Permission to use microphone was denied.</p>
+            <p id="info-blocked">Permission to use microphone is blocked. To change,
+                go to chrome://settings/contentExceptions#media-stream</p>
+            <p id="info-upgrade">Web Speech API is not supported by this browser.
+                Upgrade to <a href="//www.google.com/chrome">Chrome</a>
+                version 25 or later.</p>
+        </div>
+        <p class="center">Try saying "full stop", "comma", "exclamation mark", "question mark", "dash", "new line", some more text and then "backspace", "undo" in the boxes below.</p>
+        <div id="div_language" class="center">
+            <label for="select_language">
+                <select id="select_language"></select>
+            </label>
+            &nbsp;&nbsp;
+            <label for="select_dialect">
+                <select id="select_dialect"></select>
+            </label>
+        </div>
+        <div class="center">
+            <fieldset>
+                <h3>Text input</h3>
+                <label for="interim-output1">
+                    <input id="interim-output1" class="interim-output" type="text" size="30" disabled="true" value="Interim recognition results appear here" />
+                </label>
+                <span>
+                    <label for="input1">
+                        <input id="input1" class="voice-input" type="text" size="30" tabindex="1"/>
+                    </label>
+                    <label id="recognition-control1" class="checkbox">
+                        <input id="recognition-switch1" type="checkbox" />
+                        <span class="checkmark" id="recognition-icon1" title="Activate & deactivate recognition"></span>
+                    </label>
+                </span>
+                <!-- span>
+                    <div id="input-history1">History will appear here</div>
+                </span -->
+            </fieldset>
+        </div>
+        <div class="center">
+            <fieldset>
+                <h3>Text Area</h3>
+                <label for="interim-output2">
+                    <input id="interim-output2" class="interim-output" type="text" size="30" disabled="true" value="Interim recognition results appear here" />
+                </label>
+                <span>
+                    <label for="input2">
+                        <textarea id="input2" class="voice-input" cols="20" rows="10" tabindex="2"></textarea>
+                    </label>
+                    <label id="recognition-control2" class="checkbox" title="Activate & deactivate recognition">
+                        <input id="recognition-switch2" type="checkbox" checked />
+                        <span class="checkmark" id="recognition-icon2" title="Activate & deactivate recognition"></span>
+                    </label>
+                </span>
+                <!-- span>
+                    <div id="input-history2">History will appear here</div>
+                </span -->
+            </fieldset>
+        </div>
+    </main>
+</body>
+</html>
