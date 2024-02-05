@@ -1,10 +1,6 @@
-const pageElements = [
-  'select_language',
-  'select_dialect',
-  'info',
-  'input1',
-  'input2',
-].reduce((map, html_id) => {
+import { managedDomElements } from "./config.mjs";
+
+const pageElements = managedDomElements.reduce((map, html_id) => {
   map[html_id] = document.getElementById(html_id);
   return map;
 }, []);
