@@ -14,14 +14,12 @@ const SpeechRecognitionEngine = window.SpeechRecognition || window.webkitSpeechR
 // const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
 // const SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
 
-
 const recognition = new SpeechRecognitionEngine();
 recognition.continuous = true;
 recognition.interimResults = true;
 
-let final_transcript = '';
-let ignore_onend = false;
-let start_timestamp;
+let ignoreOnend = false;
+let startTimestamp;
 
 const insertTextAtCursor = (targetInput, text) => {
   console.log(">>> Selection:", targetInput.selectionStart, targetInput.selectionEnd, text);
@@ -52,7 +50,6 @@ const recognitionStart = ({target}) => {
     recognitionIcon.classList.add('recording-active');
     recognitionState.recognitionOutputTarget = document.getElementById(`input${recognitionInputId}`);
     recognitionState.recognitionInterimOutputTarget = document.getElementById(`interim-output${recognitionInputId}`);
-    // final_transcript = recognitionState.recognitionOutputTarget.value;
     recognition.start();
   } else {
     console.log(`--- Recognition disabled by user.`);
@@ -80,56 +77,54 @@ export const registerRecognitionCallbacks = () => {
   recognition.onstart = () => {
     console.log(`RECOGNITION.onStart`);
     recognitionState.isRecognitionInProgress = true;
-    showInfo('info_speak_now');
-    // start_img.src = 'mic-animate.gif';
+    showInfo('info-speak-now');
   }
 
   recognition.onerror = (event) => {
     console.log(`RECOGNITION.onError`, event);
     if (event.error === 'no-speech') {
-      start_img.src = 'mic.gif';
-      showInfo('info_no_speech');
-      ignore_onend = true;
+      showInfo('info-no-speech');
+      ignoreOnend = true;
     }
     if (event.error === 'audio-capture') {
-      start_img.src = 'mic.gif';
-      showInfo('info_no_microphone');
-      ignore_onend = true;
+      showInfo('info-no-microphone');
+      ignoreOnend = true;
     }
     if (event.error === 'not-allowed') {
-      if (event.timeStamp - start_timestamp < 100) {
-        showInfo('info_blocked');
+      if (event.timeStamp - startTimestamp < 100) {
+        showInfo('info-blocked');
       } else {
-        showInfo('info_denied');
+        showInfo('info-denied');
       }
-      ignore_onend = true;
+      ignoreOnend = true;
     }
   }
 
   recognition.onresult = (event) => {
     console.log(`RECOGNITION.onResult`, event);
-    let interim_transcript = [];
-    let final_transcript = [];
+    let interimTranscript = [];
+    let finalTranscript = [];
+
     for (let i = event.resultIndex; i < event.results.length; ++i) {
-      interim_transcript.push(event.results[i][0].transcript.trim().toLowerCase());
+      interimTranscript.push(event.results[i][0].transcript.trim().toLowerCase());
       if (event.results[i].isFinal) {
-        final_transcript.push(event.results[i][0].transcript.trim().toLowerCase());
+        finalTranscript.push(event.results[i][0].transcript.trim().toLowerCase());
       }
     }
     recognitionState.recognitionInterimOutputTarget.value =
-      joinWords(encodeSpecialTokens(splitIntoTokens(interim_transcript.join(" "))));
-    if (final_transcript.length) {
-      /* -- final_span.innerHTML = linebreakHTMLize(final_transcript);
-      interim_span.innerHTML = linebreakHTMLize(interim_transcript); --- */
+      joinWords(encodeSpecialTokens(splitIntoTokens(interimTranscript.join(" "))));
+    if (finalTranscript.length) {
+      /* -- finalSpan.innerHTML = linebreakHTMLize(finalTranscript);
+      interimSpan.innerHTML = linebreakHTMLize(interimTranscript); --- */
 
-      const tokens = splitIntoTokens(final_transcript.join(""));
+      const tokens = splitIntoTokens(finalTranscript.join(""));
       console.log("TOKENS:", tokens);
       const executedTokens = executeTokens(tokens);
       console.log("TOKENS EXECUTED:", executedTokens);
       const joinedWords = joinWords(executedTokens);
       console.log("JOINED:", joinedWords);
       insertTextAtCursor(recognitionState.recognitionOutputTarget, joinedWords);
-      //// recognitionState.recognitionOutputTarget.value = final_transcript;
+      //// recognitionState.recognitionOutputTarget.value = finalTranscript;
     } else {
       console.log("---- Empty input");
     }
@@ -141,18 +136,18 @@ export const registerRecognitionCallbacks = () => {
     recognitionState.recognitionOutputTarget.blur();
     recognitionState.isRecognitionInProgress = false;
 
-    if (ignore_onend) {
+    if (ignoreOnend) {
       return;
     }
-    if (!final_transcript) {
-      showInfo('info_start');
+    if (!finalTranscript.length) {
+      showInfo('info-start');
       return;
     }
     showInfo('');
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
       const range = document.createRange();
-      range.selectNode(document.getElementById('final_span'));
+      range.selectNode(document.getElementById('final-span'));
       window.getSelection().addRange(range);
     }
   }
