@@ -20,3 +20,20 @@ The features:
 - [x] Put final result into targeted input
 - [x] Blur input field on recognition idle
 - [ ] Keep input history
+
+## CHANGELOG
+
+### 2024-02-05 v1.0
+
+16h20m
+
+- Activate/deactivate voice input on a specific input
+- Show interim recognition result
+- Recognize punctuation marks
+  (`full stop`, `comma`, `dash`, `exclamation mark`, `question mark`)
+- Recognize `new line`
+- Recognize commands (`backspace`, `undo`) within latest active voice input
+- Insert new input at current cursor position
+- Replace selected fragment of text with new input
+- Put final result into targeted input
+- Blur input field on recognition idle
